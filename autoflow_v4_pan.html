@@ -1,0 +1,1192 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+#af{display:flex;flex-direction:column;height:700px;font-family:var(--font-mono,monospace);font-size:12px;background:var(--color-background-tertiary);color:var(--color-text-primary);}
+#topbar{display:flex;align-items:center;gap:8px;padding:0 12px;height:42px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0;}
+#topbar h1{font-size:12px;font-weight:500;letter-spacing:.06em;}
+.sep{width:1px;height:18px;background:var(--color-border-tertiary);}
+#wf-name{font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:3px 8px;background:var(--color-background-secondary);color:var(--color-text-primary);font-family:inherit;width:140px;}
+.sp{flex:1;}
+.tbtn{font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-family:inherit;}
+.tbtn:hover{background:var(--color-background-secondary);}
+.tbtn.g{background:#0F6E56;color:#E1F5EE;border-color:#0F6E56;}
+.tbtn.g:hover{background:#085041;}
+#mid{display:flex;flex:1;overflow:hidden;}
+#sb{width:160px;flex-shrink:0;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);overflow-y:auto;}
+.sb-sec{padding:8px 8px 2px;}
+.sb-lbl{font-size:9px;font-weight:500;letter-spacing:.1em;color:var(--color-text-tertiary);text-transform:uppercase;margin-bottom:5px;}
+.np{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:6px;border:0.5px solid var(--color-border-tertiary);margin-bottom:3px;cursor:grab;font-size:11px;background:var(--color-background-secondary);user-select:none;}
+.np:hover{border-color:var(--color-border-primary);}
+.nd{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+#cw{flex:1;position:relative;overflow:hidden;background:var(--color-background-tertiary);cursor:grab;}
+#cw.panning{cursor:grabbing;}
+#dots-canvas{position:absolute;inset:0;pointer-events:none;}
+#esvg{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
+#cnv{position:absolute;top:0;left:0;pointer-events:none;}
+#cnv .wn{pointer-events:all;}
+#zoom-ctrl{position:absolute;bottom:10px;right:10px;display:flex;gap:4px;z-index:100;align-items:center;}
+#zoom-ctrl button{width:26px;height:26px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-size:14px;font-family:inherit;display:flex;align-items:center;justify-content:center;}
+#zoom-ctrl button:hover{background:var(--color-background-secondary);}
+#zoom-label{font-size:10px;color:var(--color-text-tertiary);padding:0 4px;min-width:34px;text-align:center;}
+#pan-hint{position:absolute;bottom:10px;left:10px;font-size:10px;color:var(--color-text-tertiary);pointer-events:none;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:3px 8px;}
+#rp{width:200px;flex-shrink:0;background:var(--color-background-primary);border-left:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;}
+#rph{padding:9px 12px;border-bottom:0.5px solid var(--color-border-tertiary);font-weight:500;font-size:12px;}
+#rpb{flex:1;overflow-y:auto;padding:10px 12px;}
+.fl{font-size:10px;color:var(--color-text-secondary);margin-bottom:3px;margin-top:6px;}
+.fl:first-child{margin-top:0;}
+.fi{width:100%;font-size:11px;padding:4px 7px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-secondary);color:var(--color-text-primary);font-family:inherit;}
+.fi:focus{outline:none;border-color:#1D9E75;}
+.fta{width:100%;font-size:11px;padding:4px 7px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-secondary);color:var(--color-text-primary);font-family:inherit;resize:vertical;min-height:60px;}
+.fta:focus{outline:none;border-color:#1D9E75;}
+#lp{height:140px;flex-shrink:0;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;}
+#lph{display:flex;align-items:center;padding:5px 12px;border-bottom:0.5px solid var(--color-border-tertiary);}
+#lph span{font-size:11px;font-weight:500;}
+#lph .lhr{flex:1;text-align:right;}
+#lph button{font-size:10px;padding:2px 7px;border-radius:4px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-family:inherit;}
+#lb{flex:1;overflow-y:auto;padding:4px 12px;}
+.ll{font-size:10px;line-height:1.7;display:flex;gap:7px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.lt{color:var(--color-text-tertiary);flex-shrink:0;}
+.ln{color:#1D9E75;flex-shrink:0;min-width:90px;}
+.lm{color:var(--color-text-secondary);}
+.lm.e{color:#E24B4A;}.lm.ok{color:#1D9E75;}.lm.w{color:#EF9F27;}
+.wn{position:absolute;width:152px;background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:9px;cursor:move;user-select:none;}
+.wn:hover{border-color:var(--color-border-secondary);}
+.wn.sel{border-color:#1D9E75;border-width:1.5px;}
+.wn.running{border-color:#EF9F27;}
+.wn.success{border-color:#1D9E75;}
+.wn.error{border-color:#E24B4A;}
+.nh{padding:7px 9px 5px;display:flex;align-items:center;gap:6px;border-bottom:0.5px solid var(--color-border-tertiary);border-radius:8px 8px 0 0;}
+.ni{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.ntitle{font-size:11px;font-weight:500;flex:1;}
+.nst{width:6px;height:6px;border-radius:50%;background:var(--color-border-tertiary);flex-shrink:0;}
+.nst.running{background:#EF9F27;}.nst.success{background:#1D9E75;}.nst.error{background:#E24B4A;}
+.nb{padding:5px 9px 7px;font-size:10px;color:var(--color-text-secondary);line-height:1.4;}
+.pt{position:absolute;width:11px;height:11px;border-radius:50%;border:2px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:crosshair;z-index:10;}
+.pt:hover{background:#1D9E75;border-color:#1D9E75;}
+.po{right:-6px;top:50%;transform:translateY(-50%);}
+.pi{left:-6px;top:50%;transform:translateY(-50%);}
+.xbtn{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:#E24B4A;color:#fff;font-size:9px;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-family:inherit;z-index:20;line-height:1;}
+.wn.sel .xbtn{display:flex;}
+.ep{fill:none;stroke:var(--color-border-secondary);stroke-width:1.8;stroke-linecap:round;}
+.ep.prev{stroke:#EF9F27;stroke-dasharray:5 4;}
+.edel{fill:none;stroke:transparent;stroke-width:14;cursor:pointer;pointer-events:stroke;}
+.edel:hover+.ep{stroke:#E24B4A;}
+#hint{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;color:var(--color-text-tertiary);}
+#hint strong{display:block;font-size:28px;color:var(--color-text-secondary);margin-bottom:4px;}
+</style>
+
+<div id="af">
+  <div id="topbar">
+    <div style="width:7px;height:7px;border-radius:50%;background:#1D9E75;"></div>
+    <h1>AUTOFLOW</h1>
+    <div class="sep"></div>
+    <input id="wf-name" type="text" value="My Workflow"/>
+    <div class="sp"></div>
+    <button class="tbtn" onclick="app.clearAll()">Clear</button>
+    <button class="tbtn" onclick="app.loadExample()">Load Example</button>
+    <button class="tbtn g" id="rbtn" onclick="app.runWorkflow()">&#9654; Run</button>
+  </div>
+  <div id="mid">
+    <div id="sb">
+      <div class="sb-sec"><div class="sb-lbl">Triggers</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'manual')"><div class="nd" style="background:#1D9E75"></div>Manual</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'scheduler')"><div class="nd" style="background:#1D9E75"></div>Scheduler</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'webhook')"><div class="nd" style="background:#1D9E75"></div>Webhook</div>
+      </div>
+      <div class="sb-sec"><div class="sb-lbl">Actions</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'http')"><div class="nd" style="background:#378ADD"></div>HTTP Request</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'email')"><div class="nd" style="background:#378ADD"></div>Send Email</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'script')"><div class="nd" style="background:#378ADD"></div>Run Script</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'log')"><div class="nd" style="background:#378ADD"></div>Log Output</div>
+      </div>
+      <div class="sb-sec"><div class="sb-lbl">Logic</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'ifelse')"><div class="nd" style="background:#BA7517"></div>If / Else</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'delay')"><div class="nd" style="background:#BA7517"></div>Delay</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'merge')"><div class="nd" style="background:#BA7517"></div>Merge</div>
+      </div>
+      <div class="sb-sec"><div class="sb-lbl">Data</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'setvar')"><div class="nd" style="background:#7F77DD"></div>Set Variable</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'transform')"><div class="nd" style="background:#7F77DD"></div>Transform</div>
+        <div class="np" draggable="true" ondragstart="app.dragStart(event,'filter')"><div class="nd" style="background:#7F77DD"></div>Filter</div>
+      </div>
+    </div>
+
+    <div id="cw">
+      <canvas id="dots-canvas"></canvas>
+      <svg id="esvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="cnv" ondragover="event.preventDefault()" ondrop="app.dropNode(event)"></div>
+      <div id="hint"><strong>+</strong>Drag nodes from the left<br>Drag canvas to pan · Scroll to zoom</div>
+      <div id="zoom-ctrl">
+        <button onclick="app.renderer.zoomBy(0.15)" title="Zoom in">+</button>
+        <span id="zoom-label">100%</span>
+        <button onclick="app.renderer.zoomBy(-0.15)" title="Zoom out">−</button>
+        <button onclick="app.renderer.zoomFit()" style="font-size:10px;width:auto;padding:0 7px;">Fit</button>
+      </div>
+      <div id="pan-hint">drag to pan &nbsp;·&nbsp; scroll to zoom</div>
+    </div>
+
+    <div id="rp">
+      <div id="rph">Node Config</div>
+      <div id="rpb" style="color:var(--color-text-tertiary);font-size:11px;padding-top:16px;text-align:center;">Select a node</div>
+    </div>
+  </div>
+  <div id="lp">
+    <div id="lph"><span>Execution Log</span><div class="lhr"><button onclick="document.getElementById('lb').innerHTML=''">Clear</button></div></div>
+    <div id="lb"></div>
+  </div>
+</div>
+
+<!-- Load all class files in order -->
+<script>
+// NodeDefinition.js
+class NodeDefinition {
+  constructor(key, label, cat, color, bg, icon, desc, fields = []) {
+    this.key = key;
+    this.label = label;
+    this.cat = cat;
+    this.color = color;
+    this.bg = bg;
+    this.icon = icon;
+    this.desc = desc;
+    this.fields = fields;
+  }
+}
+
+// WorkflowNode.js
+class WorkflowNode {
+  constructor(id, type, x, y) {
+    this.id = id;
+    this.type = type;
+    this.x = x;
+    this.y = y;
+    this.cfg = {};
+    this.st = 'idle';
+  }
+
+  initConfig(fields) {
+    fields.forEach(f => {
+      this.cfg[f.k] = f.opts ? f.opts[0] : '';
+    });
+  }
+
+  getConfigSummary(defs) {
+    const c = this.cfg;
+    const d = defs[this.type];
+    
+    const summaries = {
+      http: () => (c.method || 'GET') + ' ' + (c.url ? (c.url.length > 22 ? c.url.slice(0, 20) + '…' : c.url) : 'No URL'),
+      email: () => c.to ? '-> ' + c.to : 'No recipient',
+      script: () => c.code ? c.code.slice(0, 24) + '…' : 'No code',
+      log: () => c.message || d.desc,
+      scheduler: () => c.interval || d.desc,
+      webhook: () => c.path || '/webhook',
+      ifelse: () => c.cond ? 'if ' + c.cond.slice(0, 18) : 'No condition',
+      delay: () => c.ms ? 'Wait ' + c.ms + 'ms' : 'Wait 1000ms',
+      setvar: () => c.vn ? (c.vn + ' = ' + (c.vv || '?')) : 'No variable',
+      transform: () => c.map ? c.map.slice(0, 24) + '…' : 'No expression',
+      filter: () => c.expr ? c.expr.slice(0, 22) : 'No filter',
+    };
+    
+    return (summaries[this.type] || (() => d.desc))();
+  }
+}
+
+// WorkflowEdge.js
+class WorkflowEdge {
+  constructor(id, from, to) {
+    this.id = id;
+    this.from = from;
+    this.to = to;
+  }
+}
+
+// Workflow.js
+class Workflow {
+  constructor(definitions) {
+    this.definitions = definitions;
+    this.nodes = {};
+    this.edges = [];
+    this.selectedNode = null;
+    this.nodeCounter = 0;
+    this.edgeCounter = 0;
+    this.variables = {};
+  }
+
+  addNode(type, x, y) {
+    const id = 'n' + (++this.nodeCounter);
+    const d = this.definitions[type];
+    const node = new WorkflowNode(id, type, x, y);
+    node.initConfig(d.fields || []);
+    this.nodes[id] = node;
+    return id;
+  }
+
+  deleteNode(id) {
+    this.edges = this.edges.filter(e => e.from !== id && e.to !== id);
+    delete this.nodes[id];
+    if (this.selectedNode === id) {
+      this.selectedNode = null;
+    }
+  }
+
+  selectNode(id) {
+    this.selectedNode = id;
+  }
+
+  addEdge(from, to) {
+    if (!this.edges.find(e => e.from === from && e.to === to)) {
+      const id = 'e' + (++this.edgeCounter);
+      this.edges.push(new WorkflowEdge(id, from, to));
+      return id;
+    }
+    return null;
+  }
+
+  deleteEdge(edgeId) {
+    this.edges = this.edges.filter(e => e.id !== edgeId);
+  }
+
+  updateNodeConfig(nodeId, key, value) {
+    if (this.nodes[nodeId]) {
+      this.nodes[nodeId].cfg[key] = value;
+    }
+  }
+
+  getTriggers() {
+    return Object.values(this.nodes).filter(n => ['manual', 'scheduler', 'webhook'].includes(n.type));
+  }
+
+  clear() {
+    this.nodes = {};
+    this.edges = [];
+    this.selectedNode = null;
+    this.variables = {};
+  }
+}
+
+// WorkflowRenderer.js
+class WorkflowRenderer {
+  constructor(workflow, definitions) {
+    this.workflow = workflow;
+    this.definitions = definitions;
+    this.cw = document.getElementById('cw');
+    this.cnv = document.getElementById('cnv');
+    this.esvg = document.getElementById('esvg');
+    this.dotsCanvas = document.getElementById('dots-canvas');
+    this.zoomLabel = document.getElementById('zoom-label');
+    this.panX = 0;
+    this.panY = 0;
+    this.scale = 1;
+    this.isPanning = false;
+    this.panStart = null;
+    this.dragNodeId = null;
+    this.dragNodeOffset = null;
+    this.connFrom = null;
+    this.dragType = null;
+  }
+
+  applyTransform() {
+    this.cnv.style.transform = `translate(${this.panX}px,${this.panY}px) scale(${this.scale})`;
+    this.cnv.style.transformOrigin = '0 0';
+    this.esvg.style.transform = `translate(${this.panX}px,${this.panY}px) scale(${this.scale})`;
+    this.esvg.style.transformOrigin = '0 0';
+    this.drawDots();
+    this.zoomLabel.textContent = Math.round(this.scale * 100) + '%';
+  }
+
+  drawDots() {
+    const w = this.cw.offsetWidth;
+    const h = this.cw.offsetHeight;
+    this.dotsCanvas.width = w;
+    this.dotsCanvas.height = h;
+    const ctx = this.dotsCanvas.getContext('2d');
+    ctx.clearRect(0, 0, w, h);
+    const spacing = 22 * this.scale;
+    const ox = ((this.panX % spacing) + spacing) % spacing;
+    const oy = ((this.panY % spacing) + spacing) % spacing;
+    const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+    ctx.fillStyle = dark ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.13)';
+    for (let x = ox - spacing; x < w + spacing; x += spacing) {
+      for (let y = oy - spacing; y < h + spacing; y += spacing) {
+        ctx.beginPath();
+        ctx.arc(x, y, 0.85, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  isCanvasBg(el) {
+    return el === this.cw || el === this.dotsCanvas || el === this.cnv || el.id === 'hint' || (el.closest && el.closest('#hint'));
+  }
+
+  zoomAt(delta, mx, my) {
+    const ns = Math.min(3, Math.max(0.2, this.scale + delta));
+    this.panX = mx - (mx - this.panX) * (ns / this.scale);
+    this.panY = my - (my - this.panY) * (ns / this.scale);
+    this.scale = ns;
+    this.applyTransform();
+  }
+
+  zoomBy(delta) {
+    const r = this.cw.getBoundingClientRect();
+    this.zoomAt(delta, r.width / 2, r.height / 2);
+  }
+
+  zoomFit() {
+    const ids = Object.keys(this.workflow.nodes);
+    if (!ids.length) {
+      this.panX = 0;
+      this.panY = 0;
+      this.scale = 1;
+      this.applyTransform();
+      return;
+    }
+    const xs = ids.map(i => this.workflow.nodes[i].x);
+    const ys = ids.map(i => this.workflow.nodes[i].y);
+    const minX = Math.min(...xs) - 20;
+    const maxX = Math.max(...xs) + 172;
+    const minY = Math.min(...ys) - 20;
+    const maxY = Math.max(...ys) + 80;
+    const r = this.cw.getBoundingClientRect();
+    const sx = r.width / (maxX - minX);
+    const sy = r.height / (maxY - minY);
+    this.scale = Math.min(1.2, Math.min(sx, sy) * 0.88);
+    this.panX = (r.width - (maxX - minX) * this.scale) / 2 - minX * this.scale;
+    this.panY = (r.height - (maxY - minY) * this.scale) / 2 - minY * this.scale;
+    this.applyTransform();
+  }
+
+  renderNode(id) {
+    const n = this.workflow.nodes[id];
+    const d = this.definitions[n.type];
+    let el = document.getElementById('wn-' + id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'wn-' + id;
+      this.cnv.appendChild(el);
+    }
+    el.className = 'wn' + (this.workflow.selectedNode === id ? ' sel' : '') + (n.st !== 'idle' ? ' ' + n.st : '');
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+    el.innerHTML = `
+      <button class="xbtn" onclick="app.deleteNode('${id}')">x</button>
+      <div class="pt pi" id="pi-${id}" onmousedown="app.startConn(event,'${id}','in')"></div>
+      <div class="nh">
+        <div class="ni" style="background:${d.bg};color:${d.color}">${d.icon}</div>
+        <div class="ntitle">${d.label}</div>
+        <div class="nst ${n.st !== 'idle' ? n.st : ''}"></div>
+      </div>
+      <div class="nb">${n.getConfigSummary(this.definitions)}</div>
+      <div class="pt po" id="po-${id}" onmousedown="app.startConn(event,'${id}','out')"></div>
+    `;
+    el.onmousedown = (e) => this.nodeDown(e, id);
+  }
+
+  nodeDown(e, id) {
+    if (e.target.classList.contains('pt') || e.target.classList.contains('xbtn')) return;
+    e.stopPropagation();
+    e.preventDefault();
+    this.workflow.selectNode(id);
+    this.renderNode(id);
+    this.renderConfig(id);
+    const r = this.cw.getBoundingClientRect();
+    const wx = (e.clientX - r.left - this.panX) / this.scale;
+    const wy = (e.clientY - r.top - this.panY) / this.scale;
+    this.dragNodeId = id;
+    this.dragNodeOffset = { x: wx - this.workflow.nodes[id].x, y: wy - this.workflow.nodes[id].y };
+  }
+
+  portPosWorld(nid, pt) {
+    const n = this.workflow.nodes[nid];
+    return pt === 'out' ? { x: n.x + 152, y: n.y + 36 } : { x: n.x, y: n.y + 36 };
+  }
+
+  startConn(e, nid, pt) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.connFrom = { nid, pt };
+    document.addEventListener('mousemove', (e) => this.onConnMove(e));
+    document.addEventListener('mouseup', (e) => this.onConnUp(e));
+  }
+
+  onConnMove(e) {
+    if (!this.connFrom) return;
+    const r = this.cw.getBoundingClientRect();
+    const wx = (e.clientX - r.left - this.panX) / this.scale;
+    const wy = (e.clientY - r.top - this.panY) / this.scale;
+    const fp = this.portPosWorld(this.connFrom.nid, this.connFrom.pt === 'out' ? 'out' : 'in');
+    let x1 = fp.x, y1 = fp.y, x2 = wx, y2 = wy;
+    if (this.connFrom.pt === 'in') {
+      x1 = wx;
+      y1 = wy;
+      x2 = fp.x;
+      y2 = fp.y;
+    }
+    const cx = (x1 + x2) / 2;
+    const d = `M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`;
+    let pe = document.getElementById('prev-e');
+    if (!pe) {
+      pe = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pe.id = 'prev-e';
+      pe.className.baseVal = 'ep prev';
+      this.esvg.appendChild(pe);
+    }
+    pe.setAttribute('d', d);
+  }
+
+  onConnUp(e) {
+    document.getElementById('prev-e')?.remove();
+    document.removeEventListener('mousemove', (e) => this.onConnMove(e));
+    document.removeEventListener('mouseup', (e) => this.onConnUp(e));
+    if (!this.connFrom) return;
+    const r = this.cw.getBoundingClientRect();
+    const wx = (e.clientX - r.left - this.panX) / this.scale;
+    const wy = (e.clientY - r.top - this.panY) / this.scale;
+    const oppPt = this.connFrom.pt === 'out' ? 'in' : 'out';
+    let target = null;
+    Object.keys(this.workflow.nodes).forEach(nid => {
+      if (nid === this.connFrom.nid) return;
+      const p = this.portPosWorld(nid, oppPt);
+      if (Math.hypot(wx - p.x, wy - p.y) < 18) target = nid;
+    });
+    if (target) {
+      const from = this.connFrom.pt === 'out' ? this.connFrom.nid : target;
+      const to = this.connFrom.pt === 'out' ? target : this.connFrom.nid;
+      this.workflow.addEdge(from, to);
+      this.renderEdges();
+    }
+    this.connFrom = null;
+  }
+
+  renderEdges() {
+    while (this.esvg.firstChild) this.esvg.removeChild(this.esvg.firstChild);
+    this.workflow.edges.forEach(edge => {
+      const fp = this.portPosWorld(edge.from, 'out');
+      const tp = this.portPosWorld(edge.to, 'in');
+      const cx = (fp.x + tp.x) / 2;
+      const d = `M${fp.x},${fp.y} C${cx},${fp.y} ${cx},${tp.y} ${tp.x},${tp.y}`;
+      const del = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      del.className.baseVal = 'edel';
+      del.setAttribute('d', d);
+      del.onclick = () => {
+        this.workflow.deleteEdge(edge.id);
+        this.renderEdges();
+      };
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.className.baseVal = 'ep';
+      p.setAttribute('d', d);
+      this.esvg.appendChild(del);
+      this.esvg.appendChild(p);
+    });
+  }
+
+  renderConfig(id) {
+    const n = this.workflow.nodes[id];
+    const d = this.definitions[n.type];
+    document.getElementById('rph').textContent = d.label;
+    const b = document.getElementById('rpb');
+    if (!d.fields.length) {
+      b.innerHTML = '<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:10px;">No config needed</div>';
+      return;
+    }
+    let h = '';
+    d.fields.forEach(f => {
+      const v = n.cfg[f.k] || '';
+      h += `<div class="fl">${f.l}</div>`;
+      if (f.t === 'sel') {
+        h += `<select class="fi" onchange="app.updateNodeConfig('${id}','${f.k}',this.value)">`;
+        f.opts.forEach(o => h += `<option${v === o ? ' selected' : ''}>${o}</option>`);
+        h += `</select>`;
+      } else if (f.t === 'ta') {
+        h += `<textarea class="fta" placeholder="${f.ph || ''}" onchange="app.updateNodeConfig('${id}','${f.k}',this.value)">${v}</textarea>`;
+      } else {
+        h += `<input class="fi" type="text" placeholder="${f.ph || ''}" value="${v}" oninput="app.updateNodeConfig('${id}','${f.k}',this.value)">`;
+      }
+    });
+    b.innerHTML = h;
+  }
+
+  showHint() {
+    document.getElementById('hint').style.display = Object.keys(this.workflow.nodes).length ? 'none' : 'block';
+  }
+
+  clearUI() {
+    Object.keys(this.workflow.nodes).forEach(id => document.getElementById('wn-' + id)?.remove());
+    while (this.esvg.firstChild) this.esvg.removeChild(this.esvg.firstChild);
+    document.getElementById('rph').textContent = 'Node Config';
+    document.getElementById('rpb').innerHTML = '<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:16px;text-align:center;">Select a node</div>';
+    this.showHint();
+  }
+}
+
+// WorkflowExecutor.js
+class WorkflowExecutor {
+  constructor(workflow, definitions) {
+    this.workflow = workflow;
+    this.definitions = definitions;
+    this.logger = null;
+  }
+
+  setLogger(logger) {
+    this.logger = logger;
+  }
+
+  async execute() {
+    this.workflow.variables = {};
+    Object.keys(this.workflow.nodes).forEach(id => {
+      this.workflow.nodes[id].st = 'idle';
+    });
+    const triggers = this.workflow.getTriggers();
+    if (!triggers.length) {
+      if (this.logger) this.logger.log('sys', 'No trigger node found', 'w');
+      return;
+    }
+    for (const t of triggers) {
+      await this.execNode(t.id, {});
+    }
+  }
+
+  async execNode(id, input) {
+    const n = this.workflow.nodes[id];
+    if (!n) return null;
+    n.st = 'running';
+    if (this.logger) this.logger.render();
+    await this.sleep(180 + Math.random() * 150);
+    let out = input;
+    try {
+      out = await this.simExec(n, input);
+      n.st = 'success';
+      if (this.logger) this.logger.log(id, 'Done: ' + JSON.stringify(out).slice(0, 55), 'ok');
+    } catch (err) {
+      n.st = 'error';
+      if (this.logger) this.logger.log(id, 'Error: ' + err.message, 'e');
+      return null;
+    }
+    for (const edge of this.workflow.edges.filter(e => e.from === id)) {
+      await this.sleep(80);
+      await this.execNode(edge.to, out);
+    }
+    return out;
+  }
+
+  async simExec(n, input) {
+    const c = n.cfg;
+    switch (n.type) {
+      case 'manual':
+        return { triggered: true, ts: Date.now() };
+      case 'scheduler':
+        return { triggered: true, interval: c.interval || '5min', ts: Date.now() };
+      case 'webhook':
+        return { triggered: true, path: c.path || '/webhook', body: { hello: 'world' } };
+      case 'http':
+        if (!c.url) throw new Error('No URL');
+        if (this.logger) this.logger.log(n.id, (c.method || 'GET') + ' ' + c.url, '');
+        return { status: 200, data: { id: ~~(Math.random() * 999) + 1, value: ~~(Math.random() * 100), title: 'sample' } };
+      case 'email':
+        if (!c.to) throw new Error('No recipient');
+        if (this.logger) this.logger.log(n.id, 'Email -> ' + c.to, '');
+        return { sent: true, to: c.to, subject: c.subject || '(no subject)' };
+      case 'script': {
+        const code = c.code || 'return input';
+        try {
+          const fn = new Function('input', 'variables', code.includes('return') ? code : 'return (' + code + ')');
+          const r = fn(input, this.workflow.variables);
+          return typeof r === 'object' ? r : { result: r };
+        } catch (e) {
+          throw new Error('Script: ' + e.message);
+        }
+      }
+      case 'log': {
+        const msg = (c.message || '{{input}}').replace(/\{\{(\w+(?:\.\w+)*)\}\}/g, (_, p) => p.split('.').reduce((o, k) => o?.[k], input) ?? '?');
+        if (this.logger) this.logger.log(n.id, 'LOG: ' + msg, '');
+        return { ...input, logged: msg };
+      }
+      case 'ifelse': {
+        let res = false;
+        try {
+          res = new Function('input', 'return !!(' + (c.cond || 'true') + ')')(input);
+        } catch (e) { }
+        if (this.logger) this.logger.log(n.id, 'Condition -> ' + res, res ? 'ok' : 'w');
+        return { ...input, condition_result: res, branch: res ? 'true' : 'false' };
+      }
+      case 'delay': {
+        const ms = Math.min(parseInt(c.ms) || 1000, 1200);
+        if (this.logger) this.logger.log(n.id, 'Waiting ' + ms + 'ms...', '');
+        await this.sleep(ms);
+        return { ...input, delayed: true };
+      }
+      case 'merge':
+        return { merged: true, data: input };
+      case 'setvar':
+        if (!c.vn) throw new Error('No variable name');
+        this.workflow.variables[c.vn] = c.vv;
+        if (this.logger) this.logger.log(n.id, c.vn + ' = ' + c.vv, '');
+        return { ...input, [c.vn]: c.vv };
+      case 'transform': {
+        try {
+          return new Function('input', 'return (' + (c.map || '{}') + ')')(input);
+        } catch (e) {
+          throw new Error('Transform: ' + e.message);
+        }
+      }
+      case 'filter': {
+        const arr = Array.isArray(input.items) ? input.items : [input];
+        try {
+          const fn = new Function('item', 'return !!(' + (c.expr || 'true') + ')');
+          const f = arr.filter(fn);
+          if (this.logger) this.logger.log(n.id, 'Filtered: ' + arr.length + '->' + f.length, '');
+          return { items: f, count: f.length };
+        } catch (e) {
+          throw new Error('Filter: ' + e.message);
+        }
+      }
+      default:
+        return input;
+    }
+  }
+
+  sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+}
+
+// ExecutionLogger.js
+class ExecutionLogger {
+  constructor() {
+    this.logs = [];
+    this.definitions = {};
+  }
+
+  setDefinitions(definitions) {
+    this.definitions = definitions;
+  }
+
+  setWorkflow(workflow) {
+    this.workflow = workflow;
+  }
+
+  log(nodeId, msg, type) {
+    const t = new Date().toTimeString().split(' ')[0];
+    const name = this.workflow.nodes[nodeId] ? this.definitions[this.workflow.nodes[nodeId].type].label : nodeId;
+    this.logs.push({ time: t, name, msg, type });
+    this.render();
+  }
+
+  render() {
+    const b = document.getElementById('lb');
+    b.innerHTML = this.logs.map(l =>
+      `<div class="ll"><span class="lt">${l.time}</span><span class="ln">[${l.name}]</span><span class="lm ${l.type}">${l.msg}</span></div>`
+    ).join('');
+    b.scrollTop = b.scrollHeight;
+  }
+
+  clear() {
+    this.logs = [];
+    this.render();
+  }
+}
+
+// Initialize Definitions
+const DEFS = {
+  manual: new NodeDefinition('manual', 'Manual Trigger', 't', '#1D9E75', '#E1F5EE', '&#9654;', 'Click Run to start', []),
+  scheduler: new NodeDefinition('scheduler', 'Scheduler', 't', '#1D9E75', '#E1F5EE', '&#8987;', 'Every interval', [{ k: 'interval', l: 'Interval', t: 'text', ph: '5min / 1h' }]),
+  webhook: new NodeDefinition('webhook', 'Webhook', 't', '#1D9E75', '#E1F5EE', '&#9889;', 'Incoming HTTP', [{ k: 'path', l: 'Path', t: 'text', ph: '/my-hook' }]),
+  http: new NodeDefinition('http', 'HTTP Request', 'a', '#378ADD', '#E6F1FB', '&#127760;', 'HTTP call', [{ k: 'method', l: 'Method', t: 'sel', opts: ['GET', 'POST', 'PUT', 'DELETE'] }, { k: 'url', l: 'URL', t: 'text', ph: 'https://api.example.com' }]),
+  email: new NodeDefinition('email', 'Send Email', 'a', '#378ADD', '#E6F1FB', '&#9993;', 'Send email', [{ k: 'to', l: 'To', t: 'text', ph: 'user@example.com' }, { k: 'subject', l: 'Subject', t: 'text', ph: 'Hello' }, { k: 'body', l: 'Body', t: 'ta', ph: 'Message...' }]),
+  script: new NodeDefinition('script', 'Run Script', 'a', '#378ADD', '#E6F1FB', '&#9881;', 'Execute JS', [{ k: 'code', l: 'JS Code', t: 'ta', ph: 'return { result: input.value * 2 }' }]),
+  log: new NodeDefinition('log', 'Log Output', 'a', '#378ADD', '#E6F1FB', '&#128221;', 'Print data', [{ k: 'message', l: 'Message', t: 'text', ph: 'Value: {{input.value}}' }]),
+  ifelse: new NodeDefinition('ifelse', 'If / Else', 'l', '#BA7517', '#FAEEDA', '&#9830;', 'Branch on condition', [{ k: 'cond', l: 'Condition', t: 'text', ph: 'input.value > 10' }]),
+  delay: new NodeDefinition('delay', 'Delay', 'l', '#BA7517', '#FAEEDA', '&#9203;', 'Wait', [{ k: 'ms', l: 'Duration (ms)', t: 'text', ph: '1000' }]),
+  merge: new NodeDefinition('merge', 'Merge', 'l', '#BA7517', '#FAEEDA', '&#10233;', 'Merge inputs', []),
+  setvar: new NodeDefinition('setvar', 'Set Variable', 'd', '#7F77DD', '#EEEDFE', '$', 'key = value', [{ k: 'vn', l: 'Variable', t: 'text', ph: 'myVar' }, { k: 'vv', l: 'Value', t: 'text', ph: '42' }]),
+  transform: new NodeDefinition('transform', 'Transform', 'd', '#7F77DD', '#EEEDFE', '&#8635;', 'Map data', [{ k: 'map', l: 'Expression', t: 'ta', ph: '{ id: input.id, v2: input.value*2 }' }]),
+  filter: new NodeDefinition('filter', 'Filter', 'd', '#7F77DD', '#EEEDFE', '&#9661;', 'Filter items', [{ k: 'expr', l: 'Filter Expr', t: 'text', ph: 'item.active === true' }]),
+};
+
+// Main Application Class
+class AutoflowApp {
+  constructor() {
+    this.workflow = new Workflow(DEFS);
+    this.renderer = new WorkflowRenderer(this.workflow, DEFS);
+    this.executor = new WorkflowExecutor(this.workflow, DEFS);
+    this.logger = new ExecutionLogger();
+    this.logger.setDefinitions(DEFS);
+    this.logger.setWorkflow(this.workflow);
+    this.executor.setLogger(this.logger);
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    const cw = this.renderer.cw;
+    cw.addEventListener('mousedown', (e) => this.onCanvasMouseDown(e));
+    document.addEventListener('mousemove', (e) => this.onDocumentMouseMove(e));
+    document.addEventListener('mouseup', (e) => this.onDocumentMouseUp(e));
+    cw.addEventListener('wheel', (e) => this.onCanvasWheel(e), { passive: false });
+  }
+
+  onCanvasMouseDown(e) {
+    if (!this.renderer.isCanvasBg(e.target)) return;
+    this.renderer.isPanning = true;
+    this.renderer.panStart = { x: e.clientX - this.renderer.panX, y: e.clientY - this.renderer.panY };
+    this.renderer.cw.classList.add('panning');
+    e.preventDefault();
+  }
+
+  onDocumentMouseMove(e) {
+    if (this.renderer.isPanning) {
+      this.renderer.panX = e.clientX - this.renderer.panStart.x;
+      this.renderer.panY = e.clientY - this.renderer.panStart.y;
+      this.renderer.applyTransform();
+      return;
+    }
+    if (this.renderer.dragNodeId) {
+      const r = this.renderer.cw.getBoundingClientRect();
+      const wx = (e.clientX - r.left - this.renderer.panX) / this.renderer.scale;
+      const wy = (e.clientY - r.top - this.renderer.panY) / this.renderer.scale;
+      this.workflow.nodes[this.renderer.dragNodeId].x = wx - this.renderer.dragNodeOffset.x;
+      this.workflow.nodes[this.renderer.dragNodeId].y = wy - this.renderer.dragNodeOffset.y;
+      const el = document.getElementById('wn-' + this.renderer.dragNodeId);
+      if (el) {
+        el.style.left = this.workflow.nodes[this.renderer.dragNodeId].x + 'px';
+        el.style.top = this.workflow.nodes[this.renderer.dragNodeId].y + 'px';
+      }
+      this.renderer.renderEdges();
+    }
+  }
+
+  onDocumentMouseUp(e) {
+    this.renderer.isPanning = false;
+    this.renderer.dragNodeId = null;
+    this.renderer.dragNodeOffset = null;
+    this.renderer.cw.classList.remove('panning');
+  }
+
+  onCanvasWheel(e) {
+    e.preventDefault();
+    const r = this.renderer.cw.getBoundingClientRect();
+    this.renderer.zoomAt(e.deltaY < 0 ? 0.1 : -0.1, e.clientX - r.left, e.clientY - r.top);
+  }
+
+  dragStart(e, t) {
+    this.renderer.dragType = t;
+    e.dataTransfer.setData('text/plain', t);
+  }
+
+  dropNode(e) {
+    e.preventDefault();
+    const r = this.renderer.cw.getBoundingClientRect();
+    const id = this.workflow.addNode(this.renderer.dragType, (e.clientX - r.left - this.renderer.panX) / this.renderer.scale - 76, (e.clientY - r.top - this.renderer.panY) / this.renderer.scale - 40);
+    this.renderer.renderNode(id);
+    this.renderer.showHint();
+  }
+
+  deleteNode(id) {
+    this.workflow.deleteNode(id);
+    document.getElementById('wn-' + id)?.remove();
+    if (this.workflow.selectedNode === id) {
+      document.getElementById('rph').textContent = 'Node Config';
+      document.getElementById('rpb').innerHTML = '<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:16px;text-align:center;">Select a node</div>';
+    }
+    this.renderer.renderEdges();
+    this.renderer.showHint();
+  }
+
+  startConn(e, nid, pt) {
+    this.renderer.startConn(e, nid, pt);
+  }
+
+  updateNodeConfig(id, k, v) {
+    this.workflow.updateNodeConfig(id, k, v);
+    this.renderer.renderNode(id);
+  }
+
+  async runWorkflow() {
+    const btn = document.getElementById('rbtn');
+    btn.textContent = '... Running';
+    btn.disabled = true;
+    Object.keys(this.workflow.nodes).forEach(id => this.renderer.renderNode(id));
+    await this.executor.sleep(80);
+    await this.executor.execute();
+    Object.keys(this.workflow.nodes).forEach(id => this.renderer.renderNode(id));
+    btn.innerHTML = '&#9654; Run';
+    btn.disabled = false;
+  }
+
+  clearAll() {
+    this.workflow.clear();
+    this.renderer.clearUI();
+    this.logger.clear();
+  }
+
+  loadExample() {
+    this.clearAll();
+    this.renderer.panX = 0;
+    this.renderer.panY = 0;
+    this.renderer.scale = 1;
+    const ids = {};
+    ids.t = this.workflow.addNode('manual', 30, 60);
+    ids.h = this.workflow.addNode('http', 220, 60);
+    ids.tf = this.workflow.addNode('transform', 410, 60);
+    ids.ie = this.workflow.addNode('ifelse', 220, 200);
+    ids.lg = this.workflow.addNode('log', 410, 200);
+    ids.sv = this.workflow.addNode('setvar', 30, 200);
+    this.workflow.nodes[ids.h].cfg = { method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos/1' };
+    this.workflow.nodes[ids.tf].cfg = { map: '{ id: input.data.id, doubled: (input.data.value||0)*2 }' };
+    this.workflow.nodes[ids.ie].cfg = { cond: 'input.status===200' };
+    this.workflow.nodes[ids.lg].cfg = { message: 'HTTP status: {{status}}' };
+    this.workflow.nodes[ids.sv].cfg = { vn: 'lastRun', vv: '' + Date.now() };
+    Object.keys(this.workflow.nodes).forEach(id => this.renderer.renderNode(id));
+    this.workflow.edges = [
+      new WorkflowEdge('e1', ids.t, ids.h),
+      new WorkflowEdge('e2', ids.h, ids.tf),
+      new WorkflowEdge('e3', ids.h, ids.ie),
+      new WorkflowEdge('e4', ids.ie, ids.lg),
+      new WorkflowEdge('e5', ids.tf, ids.sv),
+    ];
+    this.executor.workflow.edgeCounter = 5;
+    this.renderer.applyTransform();
+    setTimeout(() => this.renderer.renderEdges(), 50);
+    this.renderer.showHint();
+  }
+}
+
+// Global App Instance
+const app = new AutoflowApp();
+</script>
+
+function applyTransform(){
+  cnv.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
+  cnv.style.transformOrigin='0 0';
+  esvg.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
+  esvg.style.transformOrigin='0 0';
+  drawDots();
+  zoomLabel.textContent=Math.round(scale*100)+'%';
+}
+
+function drawDots(){
+  const w=cw.offsetWidth,h=cw.offsetHeight;
+  dotsCanvas.width=w;dotsCanvas.height=h;
+  const ctx=dotsCanvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  const spacing=22*scale;
+  const ox=((panX%spacing)+spacing)%spacing;
+  const oy=((panY%spacing)+spacing)%spacing;
+  const dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  ctx.fillStyle=dark?'rgba(255,255,255,0.13)':'rgba(0,0,0,0.13)';
+  for(let x=ox-spacing;x<w+spacing;x+=spacing)
+    for(let y=oy-spacing;y<h+spacing;y+=spacing){
+      ctx.beginPath();ctx.arc(x,y,0.85,0,Math.PI*2);ctx.fill();
+    }
+}
+
+function isCanvasBg(el){
+  return el===cw||el===dotsCanvas||el===cnv||el.id==='hint'||el.closest&&el.closest('#hint');
+}
+
+cw.addEventListener('mousedown',e=>{
+  mouseDownTarget=e.target;
+  if(!isCanvasBg(e.target))return;
+  isPanning=true;
+  panStart={x:e.clientX-panX,y:e.clientY-panY};
+  cw.classList.add('panning');
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove',e=>{
+  if(isPanning){
+    panX=e.clientX-panStart.x;
+    panY=e.clientY-panStart.y;
+    applyTransform();
+    return;
+  }
+  if(dragNid){
+    const r=cw.getBoundingClientRect();
+    const wx=(e.clientX-r.left-panX)/scale;
+    const wy=(e.clientY-r.top-panY)/scale;
+    nodes[dragNid].x=wx-dnOff.x;
+    nodes[dragNid].y=wy-dnOff.y;
+    const el=document.getElementById('wn-'+dragNid);
+    if(el){el.style.left=nodes[dragNid].x+'px';el.style.top=nodes[dragNid].y+'px';}
+    renderEdges();
+  }
+});
+
+document.addEventListener('mouseup',e=>{
+  isPanning=false;dragNid=null;dnOff=null;
+  cw.classList.remove('panning');
+});
+
+cw.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=cw.getBoundingClientRect();
+  zoomAt(e.deltaY<0?0.1:-0.1,e.clientX-r.left,e.clientY-r.top);
+},{passive:false});
+
+function zoomAt(delta,mx,my){
+  const ns=Math.min(3,Math.max(0.2,scale+delta));
+  panX=mx-(mx-panX)*(ns/scale);
+  panY=my-(my-panY)*(ns/scale);
+  scale=ns;applyTransform();
+}
+function zoomBy(delta){const r=cw.getBoundingClientRect();zoomAt(delta,r.width/2,r.height/2);}
+function zoomFit(){
+  const ids=Object.keys(nodes);
+  if(!ids.length){panX=0;panY=0;scale=1;applyTransform();return;}
+  const xs=ids.map(i=>nodes[i].x),ys=ids.map(i=>nodes[i].y);
+  const minX=Math.min(...xs)-20,maxX=Math.max(...xs)+172;
+  const minY=Math.min(...ys)-20,maxY=Math.max(...ys)+80;
+  const r=cw.getBoundingClientRect();
+  const sx=r.width/(maxX-minX),sy=r.height/(maxY-minY);
+  scale=Math.min(1.2,Math.min(sx,sy)*0.88);
+  panX=(r.width-(maxX-minX)*scale)/2-minX*scale;
+  panY=(r.height-(maxY-minY)*scale)/2-minY*scale;
+  applyTransform();
+}
+
+function ds(e,t){dragType=t;e.dataTransfer.setData('text/plain',t);}
+function dropN(e){
+  e.preventDefault();
+  const r=cw.getBoundingClientRect();
+  addNode(dragType,(e.clientX-r.left-panX)/scale-76,(e.clientY-r.top-panY)/scale-40);
+}
+
+function addNode(type,x,y){
+  const id='n'+(++nc),d=DEFS[type],cfg={};
+  (d.fields||[]).forEach(f=>{cfg[f.k]=f.opts?f.opts[0]:'';});
+  nodes[id]={id,type,x,y,cfg,st:'idle'};
+  renderNode(id);showHint();return id;
+}
+
+function cfgSummary(n){
+  const c=n.cfg,d=DEFS[n.type];
+  if(n.type==='http')return(c.method||'GET')+' '+(c.url?(c.url.length>22?c.url.slice(0,20)+'…':c.url):'No URL');
+  if(n.type==='email')return c.to?'-> '+c.to:'No recipient';
+  if(n.type==='script')return c.code?c.code.slice(0,24)+'…':'No code';
+  if(n.type==='log')return c.message||d.desc;
+  if(n.type==='scheduler')return c.interval||d.desc;
+  if(n.type==='webhook')return c.path||'/webhook';
+  if(n.type==='ifelse')return c.cond?'if '+c.cond.slice(0,18):'No condition';
+  if(n.type==='delay')return c.ms?'Wait '+c.ms+'ms':'Wait 1000ms';
+  if(n.type==='setvar')return c.vn?(c.vn+' = '+(c.vv||'?')):'No variable';
+  if(n.type==='transform')return c.map?c.map.slice(0,24)+'…':'No expression';
+  if(n.type==='filter')return c.expr?c.expr.slice(0,22):'No filter';
+  return d.desc;
+}
+
+function renderNode(id){
+  const n=nodes[id],d=DEFS[n.type];
+  let el=document.getElementById('wn-'+id);
+  if(!el){el=document.createElement('div');el.id='wn-'+id;cnv.appendChild(el);}
+  el.className='wn'+(sel===id?' sel':'')+(n.st!=='idle'?' '+n.st:'');
+  el.style.left=n.x+'px';el.style.top=n.y+'px';
+  el.innerHTML=`
+    <button class="xbtn" onclick="delNode('${id}')">x</button>
+    <div class="pt pi" id="pi-${id}" onmousedown="startConn(event,'${id}','in')"></div>
+    <div class="nh">
+      <div class="ni" style="background:${d.bg};color:${d.color}">${d.icon}</div>
+      <div class="ntitle">${d.label}</div>
+      <div class="nst ${n.st!=='idle'?n.st:''}"></div>
+    </div>
+    <div class="nb">${cfgSummary(n)}</div>
+    <div class="pt po" id="po-${id}" onmousedown="startConn(event,'${id}','out')"></div>
+  `;
+  el.onmousedown=(e)=>nodeDown(e,id);
+}
+
+function nodeDown(e,id){
+  if(e.target.classList.contains('pt')||e.target.classList.contains('xbtn'))return;
+  e.stopPropagation();e.preventDefault();
+  selectNode(id);
+  const r=cw.getBoundingClientRect();
+  const wx=(e.clientX-r.left-panX)/scale;
+  const wy=(e.clientY-r.top-panY)/scale;
+  dragNid=id;dnOff={x:wx-nodes[id].x,y:wy-nodes[id].y};
+}
+
+function selectNode(id){
+  sel=id;Object.keys(nodes).forEach(i=>renderNode(i));renderConfig(id);
+}
+
+function delNode(id){
+  edges=edges.filter(e=>e.from!==id&&e.to!==id);
+  delete nodes[id];
+  document.getElementById('wn-'+id)?.remove();
+  if(sel===id){sel=null;document.getElementById('rph').textContent='Node Config';document.getElementById('rpb').innerHTML='<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:16px;text-align:center;">Select a node</div>';}
+  renderEdges();showHint();
+}
+
+function portPosWorld(nid,pt){
+  const n=nodes[nid];
+  return pt==='out'?{x:n.x+152,y:n.y+36}:{x:n.x,y:n.y+36};
+}
+
+function startConn(e,nid,pt){
+  e.stopPropagation();e.preventDefault();
+  connFrom={nid,pt};
+  document.addEventListener('mousemove',onConnMove);
+  document.addEventListener('mouseup',onConnUp);
+}
+
+function onConnMove(e){
+  if(!connFrom)return;
+  const r=cw.getBoundingClientRect();
+  const wx=(e.clientX-r.left-panX)/scale,wy=(e.clientY-r.top-panY)/scale;
+  const fp=portPosWorld(connFrom.nid,connFrom.pt==='out'?'out':'in');
+  let x1=fp.x,y1=fp.y,x2=wx,y2=wy;
+  if(connFrom.pt==='in'){x1=wx;y1=wy;x2=fp.x;y2=fp.y;}
+  const cx=(x1+x2)/2;
+  const d=`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`;
+  let pe=document.getElementById('prev-e');
+  if(!pe){pe=document.createElementNS('http://www.w3.org/2000/svg','path');pe.id='prev-e';pe.className.baseVal='ep prev';esvg.appendChild(pe);}
+  pe.setAttribute('d',d);
+}
+
+function onConnUp(e){
+  document.getElementById('prev-e')?.remove();
+  document.removeEventListener('mousemove',onConnMove);
+  document.removeEventListener('mouseup',onConnUp);
+  if(!connFrom)return;
+  const r=cw.getBoundingClientRect();
+  const wx=(e.clientX-r.left-panX)/scale,wy=(e.clientY-r.top-panY)/scale;
+  const oppPt=connFrom.pt==='out'?'in':'out';
+  let target=null;
+  Object.keys(nodes).forEach(nid=>{
+    if(nid===connFrom.nid)return;
+    const p=portPosWorld(nid,oppPt);
+    if(Math.hypot(wx-p.x,wy-p.y)<18)target=nid;
+  });
+  if(target){
+    const from=connFrom.pt==='out'?connFrom.nid:target;
+    const to=connFrom.pt==='out'?target:connFrom.nid;
+    if(!edges.find(e=>e.from===from&&e.to===to)){edges.push({id:'e'+(++ec),from,to});renderEdges();}
+  }
+  connFrom=null;
+}
+
+function renderEdges(){
+  while(esvg.firstChild)esvg.removeChild(esvg.firstChild);
+  edges.forEach(edge=>{
+    const fp=portPosWorld(edge.from,'out'),tp=portPosWorld(edge.to,'in');
+    const cx=(fp.x+tp.x)/2;
+    const d=`M${fp.x},${fp.y} C${cx},${fp.y} ${cx},${tp.y} ${tp.x},${tp.y}`;
+    const del=document.createElementNS('http://www.w3.org/2000/svg','path');
+    del.className.baseVal='edel';del.setAttribute('d',d);
+    del.onclick=()=>{edges=edges.filter(e=>e.id!==edge.id);renderEdges();};
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.className.baseVal='ep';p.setAttribute('d',d);
+    esvg.appendChild(del);esvg.appendChild(p);
+  });
+}
+
+function renderConfig(id){
+  const n=nodes[id],d=DEFS[n.type];
+  document.getElementById('rph').textContent=d.label;
+  const b=document.getElementById('rpb');
+  if(!d.fields.length){b.innerHTML='<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:10px;">No config needed</div>';return;}
+  let h='';
+  d.fields.forEach(f=>{
+    const v=n.cfg[f.k]||'';
+    h+=`<div class="fl">${f.l}</div>`;
+    if(f.t==='sel'){
+      h+=`<select class="fi" onchange="upCfg('${id}','${f.k}',this.value)">`;
+      f.opts.forEach(o=>h+=`<option${v===o?' selected':''}>${o}</option>`);
+      h+=`</select>`;
+    }else if(f.t==='ta'){
+      h+=`<textarea class="fta" placeholder="${f.ph||''}" onchange="upCfg('${id}','${f.k}',this.value)">${v}</textarea>`;
+    }else{
+      h+=`<input class="fi" type="text" placeholder="${f.ph||''}" value="${v}" oninput="upCfg('${id}','${f.k}',this.value)">`;
+    }
+  });
+  b.innerHTML=h;
+}
+
+function upCfg(id,k,v){nodes[id].cfg[k]=v;renderNode(id);}
+
+let vars={};
+async function runWF(){
+  const btn=document.getElementById('rbtn');
+  btn.textContent='... Running';btn.disabled=true;
+  vars={};
+  Object.keys(nodes).forEach(id=>{nodes[id].st='idle';renderNode(id);});
+  await sleep(80);
+  const triggers=Object.values(nodes).filter(n=>['manual','scheduler','webhook'].includes(n.type));
+  if(!triggers.length){addLog('sys','No trigger node found','w');btn.innerHTML='&#9654; Run';btn.disabled=false;return;}
+  for(const t of triggers)await execNode(t.id,{});
+  btn.innerHTML='&#9654; Run';btn.disabled=false;
+}
+
+async function execNode(id,input){
+  const n=nodes[id];if(!n)return null;
+  n.st='running';renderNode(id);
+  await sleep(180+Math.random()*150);
+  let out=input;
+  try{out=await simExec(n,input);n.st='success';renderNode(id);addLog(id,'Done: '+JSON.stringify(out).slice(0,55),'ok');}
+  catch(err){n.st='error';renderNode(id);addLog(id,'Error: '+err.message,'e');return null;}
+  for(const edge of edges.filter(e=>e.from===id)){await sleep(80);await execNode(edge.to,out);}
+  renderEdges();return out;
+}
+
+async function simExec(n,input){
+  const c=n.cfg;
+  switch(n.type){
+    case 'manual':return{triggered:true,ts:Date.now()};
+    case 'scheduler':return{triggered:true,interval:c.interval||'5min',ts:Date.now()};
+    case 'webhook':return{triggered:true,path:c.path||'/webhook',body:{hello:'world'}};
+    case 'http':if(!c.url)throw new Error('No URL');addLog(n.id,(c.method||'GET')+' '+c.url,'');return{status:200,data:{id:~~(Math.random()*999)+1,value:~~(Math.random()*100),title:'sample'}};
+    case 'email':if(!c.to)throw new Error('No recipient');addLog(n.id,'Email -> '+c.to,'');return{sent:true,to:c.to,subject:c.subject||'(no subject)'};
+    case 'script':{const code=c.code||'return input';try{const fn=new Function('input','variables',code.includes('return')?code:'return ('+code+')');const r=fn(input,vars);return typeof r==='object'?r:{result:r};}catch(e){throw new Error('Script: '+e.message);}}
+    case 'log':{const msg=(c.message||'{{input}}').replace(/\{\{(\w+(?:\.\w+)*)\}\}/g,(_,p)=>p.split('.').reduce((o,k)=>o?.[k],input)??'?');addLog(n.id,'LOG: '+msg,'');return{...input,logged:msg};}
+    case 'ifelse':{let res=false;try{res=new Function('input','return !!('+( c.cond||'true')+')')(input);}catch(e){}addLog(n.id,'Condition -> '+res,res?'ok':'w');return{...input,condition_result:res,branch:res?'true':'false'};}
+    case 'delay':{const ms=Math.min(parseInt(c.ms)||1000,1200);addLog(n.id,'Waiting '+ms+'ms...','');await sleep(ms);return{...input,delayed:true};}
+    case 'merge':return{merged:true,data:input};
+    case 'setvar':if(!c.vn)throw new Error('No variable name');vars[c.vn]=c.vv;addLog(n.id,c.vn+' = '+c.vv,'');return{...input,[c.vn]:c.vv};
+    case 'transform':{try{return new Function('input','return ('+( c.map||'{}')+')')(input);}catch(e){throw new Error('Transform: '+e.message);}}
+    case 'filter':{const arr=Array.isArray(input.items)?input.items:[input];try{const fn=new Function('item','return !!('+( c.expr||'true')+')');const f=arr.filter(fn);addLog(n.id,'Filtered: '+arr.length+'->'+f.length,'');return{items:f,count:f.length};}catch(e){throw new Error('Filter: '+e.message);}}
+    default:return input;
+  }
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function addLog(nodeId,msg,type){
+  const b=document.getElementById('lb');
+  const t=new Date().toTimeString().split(' ')[0];
+  const name=nodes[nodeId]?DEFS[nodes[nodeId].type].label:nodeId;
+  const d=document.createElement('div');d.className='ll';
+  d.innerHTML=`<span class="lt">${t}</span><span class="ln">[${name}]</span><span class="lm ${type||''}">${msg}</span>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+
+function clearAll(){
+  Object.keys(nodes).forEach(id=>document.getElementById('wn-'+id)?.remove());
+  nodes={};edges=[];sel=null;
+  while(esvg.firstChild)esvg.removeChild(esvg.firstChild);
+  showHint();
+  document.getElementById('rph').textContent='Node Config';
+  document.getElementById('rpb').innerHTML='<div style="color:var(--color-text-tertiary);font-size:11px;padding-top:16px;text-align:center;">Select a node</div>';
+}
+
+function showHint(){document.getElementById('hint').style.display=Object.keys(nodes).length?'none':'block';}
+
+function loadExample(){
+  clearAll();panX=0;panY=0;scale=1;
+  const ids={};
+  ids.t=addNode('manual',30,60);
+  ids.h=addNode('http',220,60);
+  ids.tf=addNode('transform',410,60);
+  ids.ie=addNode('ifelse',220,200);
+  ids.lg=addNode('log',410,200);
+  ids.sv=addNode('setvar',30,200);
+  nodes[ids.h].cfg={method:'GET',url:'https://jsonplaceholder.typicode.com/todos/1'};
+  nodes[ids.tf].cfg={map:'{ id: input.data.id, doubled: (input.data.value||0)*2 }'};
+  nodes[ids.ie].cfg={cond:'input.status===200'};
+  nodes[ids.lg].cfg={message:'HTTP status: {{status}}'};
+  nodes[ids.sv].cfg={vn:'lastRun',vv:''+Date.now()};
+  Object.keys(nodes).forEach(id=>renderNode(id));
+  edges=[{id:'e1',from:ids.t,to:ids.h},{id:'e2',from:ids.h,to:ids.tf},{id:'e3',from:ids.h,to:ids.ie},{id:'e4',from:ids.ie,to:ids.lg},{id:'e5',from:ids.tf,to:ids.sv}];
+  ec=5;applyTransform();setTimeout(renderEdges,50);showHint();
+}
+
+window.addEventListener('resize',drawDots);
+applyTransform();
+loadExample();
+</script>
